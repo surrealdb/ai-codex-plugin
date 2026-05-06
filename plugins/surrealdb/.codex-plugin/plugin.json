@@ -1,0 +1,49 @@
+{
+	"name": "surrealdb",
+	"version": "0.1.0",
+	"description": "Manage SurrealDB projects and databases",
+	"author": {
+		"name": "SurrealDB",
+		"email": "info@surrealdb.com",
+		"url": "https://surrealdb.com"
+	},
+	"homepage": "https://surrealdb.com/mcp",
+	"repository": "https://github.com/surrealdb/surrealmcp",
+	"license": "Apache-2.0",
+	"keywords": [
+		"surrealdb",
+		"surrealdb-mcp",
+		"mcp",
+		"database",
+		"cloud",
+		"local"
+	],
+	"skills": "./skills/",
+	"interface": {
+		"displayName": "SurrealDB",
+		"shortDescription": "Manage SurrealDB projects and databases",
+		"longDescription": "Use the SurrealDB plugin to create and manage SurrealDB instances, namespaces, databases, and access credentials. Includes the SurrealDB MCP Server for instance and database management, plus the surrealdb skill with guides on connection methods, schema design, querying with SurrealQL, authentication, scaling, backups, and more.",
+		"developerName": "SurrealDB",
+		"category": "Databases",
+		"capabilities": [
+			"MCP",
+			"Database",
+			"Cloud",
+			"Local",
+			"Read",
+			"Write"
+		],
+		"websiteURL": "https://surrealdb.com/mcp",
+		"privacyPolicyURL": "https://surrealdb.com/legal/privacy",
+		"termsOfServiceURL": "https://surrealdb.com/legal/msa",
+		"defaultPrompt": [
+			"Use SurrealDB's built-in MCP server",
+			"Inspect my SurrealDB schema",
+			"Set up my SurrealDB MCP endpoint URL",
+			"Using SurrealDB"
+		],
+		"logo": "./assets/logo.png",
+		"brandColor": "#FF00A0",
+		"screenshots": []
+	}
+}

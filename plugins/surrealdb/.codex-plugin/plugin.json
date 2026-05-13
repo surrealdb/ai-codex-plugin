@@ -19,10 +19,11 @@
 		"local"
 	],
 	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
 	"interface": {
 		"displayName": "SurrealDB",
 		"shortDescription": "Manage SurrealDB projects and databases",
-		"longDescription": "Use the SurrealDB plugin to create and manage SurrealDB instances, namespaces, databases, and access credentials. Includes the SurrealDB MCP Server for instance and database management, plus the surrealdb skill with guides on connection methods, schema design, querying with SurrealQL, authentication, scaling, backups, and more.",
+		"longDescription": "Use the SurrealDB plugin to connect Codex to SurrealDB's MCP server and load official SurrealDB skills. Includes the local mcp skill for connection setup plus synced upstream skills for SurrealQL, vector search, SDK usage, and related workflows.",
 		"developerName": "SurrealDB",
 		"category": "Databases",
 		"capabilities": [
@@ -37,10 +38,10 @@
 		"privacyPolicyURL": "https://surrealdb.com/legal/privacy",
 		"termsOfServiceURL": "https://surrealdb.com/legal/msa",
 		"defaultPrompt": [
-			"Use SurrealDB's built-in MCP server",
+			"Use SurrealDB's MCP server",
 			"Inspect my SurrealDB schema",
 			"Set up my SurrealDB MCP endpoint URL",
-			"Using SurrealDB"
+			"Write a SurrealQL query with SurrealDB"
 		],
 		"logo": "./assets/logo.png",
 		"brandColor": "#FF00A0",

@@ -1,0 +1,42 @@
+{
+  "name": "spectron",
+  "version": "0.1.0",
+  "description": "Connect Codex to a Spectron MCP endpoint",
+  "author": {
+    "name": "SurrealDB",
+    "email": "info@surrealdb.com",
+    "url": "https://surrealdb.com"
+  },
+  "homepage": "https://spectron.surrealdb.com/mcp",
+  "license": "Apache-2.0",
+  "keywords": [
+    "spectron",
+    "spectron-mcp",
+    "surrealdb",
+    "mcp",
+    "instance"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Spectron",
+    "shortDescription": "Connect Codex to a Spectron MCP endpoint.",
+    "longDescription": "Use the Spectron plugin to connect Codex to the MCP server exposed by your Spectron instance. The user-provided instance URL is the source of truth and should point to an endpoint such as https://<instance>/mcp.",
+    "developerName": "SurrealDB",
+    "category": "Developer Tools",
+    "capabilities": [
+      "MCP",
+      "Remote",
+      "Instance"
+    ],
+    "websiteURL": "https://spectron.surrealdb.com/mcp",
+    "privacyPolicyURL": "https://surrealdb.com/legal/privacy",
+    "termsOfServiceURL": "https://surrealdb.com/legal/msa",
+    "defaultPrompt": [
+      "Connect my Spectron MCP endpoint",
+      "Inspect my Spectron MCP tools",
+      "Troubleshoot my Spectron connection"
+    ],
+    "brandColor": "#00C2FF",
+    "screenshots": []
+  }
+}

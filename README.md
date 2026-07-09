@@ -1,31 +1,71 @@
-# Codex Plugin
+# SurrealDB Codex Marketplace
 
-Connect Codex to SurrealDB's first-party MCP server, plus curated SurrealDB agent skills.
+This repository is a local Codex marketplace for SurrealDB plugins until the plugins are available through the official Codex marketplace.
 
-This plugin ships:
+It currently ships two plugins:
 
-- a bundled `.mcp.json` with ready-to-install HTTP MCP services for SurrealDB database, SurrealDB Cloud, and Spectron
-- `mcp` Codex skill for connecting to SurrealDB's built-in MCP server
-- synced upstream skills from `surrealdb/agent-skills` for SurrealQL, vector search, SDK usage, and related topics
+- `surrealdb`: SurrealDB MCP setup guidance plus curated SurrealDB skills for SurrealQL, vector search, SDK usage, and related workflows.
+- `spectron`: Spectron MCP setup guidance for connecting Codex to a user-provided Spectron instance.
 
 ## Requirements
 
-- Either the local `surreal` CLI with the `surreal mcp stdio` subcommand, or a SurrealDB instance that exposes `/mcp` over HTTP.
-- For HTTP mode, the endpoint URL for the SurrealDB MCP server.
+- Codex with local marketplace support.
+- A SurrealDB or Spectron instance that exposes MCP over HTTP.
+- The instance MCP endpoint URL, typically `https://<instance>/mcp`.
 
-## Configuration
+## Marketplace
 
-## Bundled MCP Services
+The repo-local marketplace manifest lives at `.agents/plugins/marketplace.json`.
 
-The plugin bundles these MCP services:
+From this repository root, add the marketplace:
 
-- `surrealdb-database` using `${SURREALDB_MCP_URL:-http://127.0.0.1:8000/mcp}` with `Authorization: Bearer ${SURREALDB_MCP_TOKEN}`
-- `surrealdb-cloud` using `https://app.surrealdb.com/mcp` with `Authorization: Bearer ${SURREALDB_CLOUD_TOKEN}`
-- `spectron` using `${SPECTRON_MCP_URL:-https://spectron.surrealdb.com/mcp}` with `Authorization: Bearer ${SPECTRON_MCP_TOKEN}`
+```sh
+codex plugin marketplace add "$PWD"
+```
 
-Set the relevant environment variables before installing or using the plugin.
+Then install either plugin from the `surrealdb` marketplace:
 
-## Alternative Configuration
+```sh
+codex plugin add surrealdb@surrealdb
+codex plugin add spectron@surrealdb
+```
+
+## MCP Configuration
+
+The plugins do not bundle a fixed `.mcp.json` because SurrealDB and Spectron MCP endpoints are instance-specific. Add the MCP server directly in Codex with the endpoint for the user's instance.
+
+For SurrealDB:
+
+```sh
+codex mcp add surrealdb --url "https://<instance>/mcp"
+```
+
+For Spectron:
+
+```sh
+codex mcp add spectron --url "https://<instance>/mcp"
+```
+
+If the endpoint accepts a ready-to-use bearer token:
+
+```sh
+export SURREALDB_MCP_TOKEN="<access-token-or-jwt>"
+codex mcp add surrealdb \
+  --url "https://<instance>/mcp" \
+  --bearer-token-env-var SURREALDB_MCP_TOKEN
+
+export SPECTRON_MCP_TOKEN="<access-token-or-jwt>"
+codex mcp add spectron \
+  --url "https://<instance>/mcp" \
+  --bearer-token-env-var SPECTRON_MCP_TOKEN
+```
+
+If the endpoint supports OAuth, authenticate after adding it:
+
+```sh
+codex mcp login surrealdb
+codex mcp login spectron
+```
 
 For local development, you can still prefer the built-in stdio transport:
 
@@ -33,37 +73,15 @@ For local development, you can still prefer the built-in stdio transport:
 codex mcp add surrealdb -- surreal mcp stdio
 ```
 
-For HTTP mode, add the MCP server directly in Codex:
-
-```sh
-codex mcp add surrealdb --url "https://<instance>/mcp"
-```
-
-For a local instance:
-
-```sh
-codex mcp add surrealdb --url "http://127.0.0.1:8000/mcp"
-```
-
-If the HTTP endpoint accepts a ready-to-use access token or JWT in the `Authorization` header:
-
-```sh
-export SURREALDB_MCP_TOKEN="<access-token-or-jwt>"
-codex mcp add surrealdb \
-  --url "https://<instance>/mcp" \
-  --bearer-token-env-var SURREALDB_MCP_TOKEN
-```
-
 Important:
 
 - A `surreal-bearer-...` value is a bearer grant key, not automatically the token to send to `/mcp`.
 - Bearer grant keys must first be exchanged through SurrealDB auth, typically `POST /signin` with the correct namespace, database, access method, and `key`, to obtain a JWT or session token.
 - Use that resulting access token for HTTP MCP auth.
-- If you already have a local SurrealDB process, `surreal mcp stdio` avoids this HTTP auth handoff entirely.
 
 ## How It Works
 
-The plugin now bundles a prewired `.mcp.json` for the common SurrealDB HTTP endpoints while still allowing you to add or override MCP connections directly in your own Codex configuration.
+Each plugin installs skills and presentation metadata. MCP connection details stay in the user's Codex MCP configuration because the URL depends on the user's SurrealDB or Spectron instance.
 
 ## Upstream Skill Sync
 
@@ -84,7 +102,7 @@ To sync from a local checkout instead of cloning:
 Notes:
 
 - Synced skills are written into `plugins/surrealdb/skills/<skill-name>/`.
-- The local `plugins/surrealdb/skills/mcp/` skill is protected and is not overwritten by the sync script.
+- The local `plugins/surrealdb/skills/database-mcp/` skill is protected and is not overwritten by the sync script.
 - If an upstream skill contains a `references/` directory, it is copied alongside `SKILL.md`.
 - The sync script itself is the source of truth for the upstream repo and ref.
 
@@ -96,6 +114,7 @@ Once the MCP server is added, ask Codex things like:
 - Run a read-only SurrealQL query.
 - Explore records in this namespace and database.
 - Help me troubleshoot my SurrealDB MCP connection.
+- Help me troubleshoot my Spectron MCP connection.
 - Write a SurrealQL query for graph traversal.
 - Create an HNSW vector index for semantic search.
 - Show how to connect to SurrealDB from Python.
@@ -110,4 +129,4 @@ If `Authorization: Bearer surreal-bearer-...` returns `InvalidToken`, you are li
 
 If authentication fails with `--bearer-token-env-var`, confirm the env var contains the final access token or JWT, not the bearer grant key.
 
-Use `codex mcp get surrealdb` or `codex mcp list` to inspect the current configuration.
+Use `codex mcp get surrealdb`, `codex mcp get spectron`, or `codex mcp list` to inspect the current configuration.

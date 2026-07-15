@@ -8,7 +8,7 @@
     "url": "https://surrealdb.com"
   },
   "homepage": "https://spectron.surrealdb.com/mcp",
-  "repository": "https://github.com/surrealdb-dev/codex-plugin",
+  "repository": "https://github.com/surrealdb/ai-codex-plugin",
   "license": "Apache-2.0",
   "keywords": [
     "spectron",
@@ -30,7 +30,7 @@
       "Remote",
       "Instance"
     ],
-    "websiteURL": "https://spectron.surrealdb.com/mcp",
+    "websiteURL": "https://surrealdb.com/platforms/spectron",
     "privacyPolicyURL": "https://surrealdb.com/legal/privacy",
     "termsOfServiceURL": "https://surrealdb.com/legal/msa",
     "defaultPrompt": [

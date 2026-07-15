@@ -8,7 +8,7 @@
 		"url": "https://surrealdb.com"
 	},
 	"homepage": "https://surrealdb.com/mcp",
-	"repository": "https://github.com/surrealdb-dev/codex-plugin",
+	"repository": "https://github.com/surrealdb/ai-codex-plugin",
 	"license": "Apache-2.0",
 	"keywords": [
 		"surrealdb",
@@ -34,7 +34,7 @@
 			"Read",
 			"Write"
 		],
-		"websiteURL": "https://surrealdb.com/mcp",
+		"websiteURL": "https://surrealdb.com",
 		"privacyPolicyURL": "https://surrealdb.com/legal/privacy",
 		"termsOfServiceURL": "https://surrealdb.com/legal/msa",
 		"defaultPrompt": [

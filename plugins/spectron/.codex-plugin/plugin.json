@@ -8,6 +8,7 @@
     "url": "https://surrealdb.com"
   },
   "homepage": "https://spectron.surrealdb.com/mcp",
+  "repository": "https://github.com/surrealdb-dev/codex-plugin",
   "license": "Apache-2.0",
   "keywords": [
     "spectron",
@@ -17,10 +18,11 @@
     "instance"
   ],
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Spectron",
     "shortDescription": "Connect Codex to a Spectron MCP endpoint.",
-    "longDescription": "Use the Spectron plugin to connect Codex to the MCP server exposed by your Spectron instance. The user-provided instance URL is the source of truth and should point to an endpoint such as https://<instance>/mcp.",
+    "longDescription": "Use the Spectron plugin to connect Codex to the MCP server exposed by your Spectron instance. Includes a bundled Codex MCP descriptor for the spectron server. The user-provided instance URL is the source of truth and should point to an endpoint such as https://<instance>/mcp.",
     "developerName": "SurrealDB",
     "category": "Developer Tools",
     "capabilities": [

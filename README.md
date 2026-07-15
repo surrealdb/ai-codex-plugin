@@ -1,11 +1,11 @@
 # SurrealDB Codex Marketplace
 
-This repository is a local Codex marketplace for SurrealDB plugins until the plugins are available through the official Codex marketplace.
+A Codex plugin marketplace from SurrealDB. It currently ships two plugins:
 
-It currently ships two plugins:
-
-- `surrealdb`: SurrealDB MCP setup guidance plus curated SurrealDB skills for SurrealQL, vector search, SDK usage, and related workflows.
-- `spectron`: Spectron MCP setup guidance for connecting Codex to a user-provided Spectron instance.
+| Plugin | What it connects | Ships |
+| --- | --- | --- |
+| [`surrealdb`](plugins/surrealdb/) | Your SurrealDB instance's `/mcp` route | Instance MCP plus SurrealDB skills for SurrealQL, vector search, SDK usage, and related workflows |
+| [`spectron`](plugins/spectron/) | Your Spectron instance's `/mcp` route | Instance MCP plus a Spectron usage skill |
 
 ## Requirements
 
@@ -13,7 +13,17 @@ It currently ships two plugins:
 - A SurrealDB or Spectron instance that exposes MCP over HTTP.
 - The instance MCP endpoint URL, typically `https://<instance>/mcp`.
 
-## Marketplace
+## Install From GitHub
+
+Add this repo as a marketplace, then install whichever plugins you want:
+
+```sh
+codex plugin marketplace add surrealdb-dev/codex-plugin --ref main
+codex plugin add surrealdb@surrealdb
+codex plugin add spectron@surrealdb
+```
+
+## Install From A Local Checkout
 
 The repo-local marketplace manifest lives at `.agents/plugins/marketplace.json`.
 
@@ -32,45 +42,45 @@ codex plugin add spectron@surrealdb
 
 ## MCP Configuration
 
-The plugins do not bundle a fixed `.mcp.json` because SurrealDB and Spectron MCP endpoints are instance-specific. Add the MCP server directly in Codex with the endpoint for the user's instance.
+Each plugin bundles a Codex `.mcp.json` descriptor. The endpoint URLs are instance-specific, so set the environment variables before starting Codex or before opening a new task that should use the MCP tools.
 
 For SurrealDB:
 
 ```sh
-codex mcp add surrealdb --url "https://<instance>/mcp"
+export SURREALDB_MCP_URL="https://<instance>/mcp"
+export SURREALDB_MCP_TOKEN="<access-token-or-jwt>"
 ```
 
 For Spectron:
 
 ```sh
-codex mcp add spectron --url "https://<instance>/mcp"
+export SPECTRON_MCP_URL="https://<instance>/mcp"
+export SPECTRON_MCP_TOKEN="<access-token-or-jwt>"
 ```
 
-If the endpoint accepts a ready-to-use bearer token:
+The bundled MCP server names are:
+
+- `surrealdb-database`
+- `spectron`
+
+If you prefer manual Codex MCP configuration instead of the bundled plugin descriptors, add the servers directly:
 
 ```sh
-export SURREALDB_MCP_TOKEN="<access-token-or-jwt>"
-codex mcp add surrealdb \
+codex mcp add surrealdb-database \
   --url "https://<instance>/mcp" \
   --bearer-token-env-var SURREALDB_MCP_TOKEN
 
-export SPECTRON_MCP_TOKEN="<access-token-or-jwt>"
 codex mcp add spectron \
   --url "https://<instance>/mcp" \
   --bearer-token-env-var SPECTRON_MCP_TOKEN
 ```
 
-If the endpoint supports OAuth, authenticate after adding it:
-
-```sh
-codex mcp login surrealdb
-codex mcp login spectron
-```
+If the endpoint supports OAuth, authenticate after adding it manually with `codex mcp login surrealdb-database` or `codex mcp login spectron`.
 
 For local development, you can still prefer the built-in stdio transport:
 
 ```sh
-codex mcp add surrealdb -- surreal mcp stdio
+codex mcp add surrealdb-database -- surreal mcp stdio
 ```
 
 Important:
@@ -81,7 +91,7 @@ Important:
 
 ## How It Works
 
-Each plugin installs skills and presentation metadata. MCP connection details stay in the user's Codex MCP configuration because the URL depends on the user's SurrealDB or Spectron instance.
+Each plugin installs skills, presentation metadata, and a Codex MCP descriptor. The descriptors intentionally read endpoints and bearer tokens from environment variables because the URL depends on the user's SurrealDB or Spectron instance.
 
 ## Upstream Skill Sync
 
@@ -108,7 +118,7 @@ Notes:
 
 ## Usage
 
-Once the MCP server is added, ask Codex things like:
+Once the plugin is installed and the MCP server is configured, ask Codex things like:
 
 - Inspect my SurrealDB schema.
 - Run a read-only SurrealQL query.
@@ -129,4 +139,4 @@ If `Authorization: Bearer surreal-bearer-...` returns `InvalidToken`, you are li
 
 If authentication fails with `--bearer-token-env-var`, confirm the env var contains the final access token or JWT, not the bearer grant key.
 
-Use `codex mcp get surrealdb`, `codex mcp get spectron`, or `codex mcp list` to inspect the current configuration.
+Use `codex mcp get surrealdb-database`, `codex mcp get spectron`, or `codex mcp list` to inspect the current configuration.

@@ -8,7 +8,7 @@
 		"url": "https://surrealdb.com"
 	},
 	"homepage": "https://surrealdb.com/mcp",
-	"repository": "https://github.com/surrealdb/surrealmcp",
+	"repository": "https://github.com/surrealdb-dev/codex-plugin",
 	"license": "Apache-2.0",
 	"keywords": [
 		"surrealdb",
@@ -19,10 +19,11 @@
 		"local"
 	],
 	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
 	"interface": {
 		"displayName": "SurrealDB",
 		"shortDescription": "Manage SurrealDB projects and databases",
-		"longDescription": "Use the SurrealDB plugin to connect Codex to a user-provided SurrealDB MCP endpoint and load official SurrealDB skills. Includes the database-mcp skill for connection setup plus synced upstream skills for SurrealQL, vector search, SDK usage, and related workflows.",
+		"longDescription": "Use the SurrealDB plugin to connect Codex to a user-provided SurrealDB MCP endpoint and load official SurrealDB skills. Includes a bundled Codex MCP descriptor for the surrealdb-database server, the database-mcp setup skill, and synced upstream skills for SurrealQL, vector search, SDK usage, and related workflows.",
 		"developerName": "SurrealDB",
 		"category": "Databases",
 		"capabilities": [

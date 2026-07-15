@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "spectron": {
+      "type": "http",
+      "url": "${SPECTRON_MCP_URL}",
+      "bearer_token_env_var": "SPECTRON_MCP_TOKEN"
+    }
+  }
+}

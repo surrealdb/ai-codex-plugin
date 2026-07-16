@@ -18,7 +18,7 @@ A Codex plugin marketplace from SurrealDB. It currently ships two plugins:
 Add this repo as a marketplace, then install whichever plugins you want:
 
 ```sh
-codex plugin marketplace add surrealdb-dev/codex-plugin --ref main
+codex plugin marketplace add surrealdb/ai-codex-plugin --ref main
 codex plugin add surrealdb@surrealdb
 codex plugin add spectron@surrealdb
 ```

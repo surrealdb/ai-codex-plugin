@@ -56,6 +56,7 @@ For Spectron:
 ```sh
 export SPECTRON_MCP_URL="https://<instance>/mcp"
 export SPECTRON_MCP_TOKEN="<access-token-or-jwt>"
+export SPECTRON_CONTEXT_ID="<context-id>"
 ```
 
 The bundled MCP server names are:
@@ -92,6 +93,8 @@ Important:
 ## How It Works
 
 Each plugin installs skills, presentation metadata, and a Codex MCP descriptor. The descriptors intentionally read endpoints and bearer tokens from environment variables because the URL depends on the user's SurrealDB or Spectron instance.
+
+The Spectron plugin also bundles `UserPromptSubmit` and `Stop` lifecycle hooks. Once trusted in Codex, they send completed user/assistant turns through the bundled official `@surrealdb/spectron` TypeScript SDK to Spectron's `/facts/batch` endpoint, with whole-conversation extraction and stable per-turn idempotency keys. The hook derives the REST base URL and API key from `SPECTRON_MCP_URL` and `SPECTRON_MCP_TOKEN`; `SPECTRON_CONTEXT_ID` selects the target Context. Recording failures are logged but never block a Codex turn.
 
 ## Upstream Skill Sync
 
@@ -138,5 +141,7 @@ If tools do not appear, confirm the URL points to an MCP endpoint, not a normal 
 If `Authorization: Bearer surreal-bearer-...` returns `InvalidToken`, you are likely sending a bearer grant key directly to `/mcp`. Exchange it for a JWT first, or switch to `surreal mcp stdio` for local use.
 
 If authentication fails with `--bearer-token-env-var`, confirm the env var contains the final access token or JWT, not the bearer grant key.
+
+If automatic Spectron turn capture does not run, open `/hooks` in Codex CLI and trust the plugin's hook definition. Confirm `SPECTRON_CONTEXT_ID` is set, and set `SPECTRON_HOOK_VERBOSE=1` for a one-line status after each hook invocation.
 
 Use `codex mcp get surrealdb-database`, `codex mcp get spectron`, or `codex mcp list` to inspect the current configuration.

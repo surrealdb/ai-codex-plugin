@@ -1,0 +1,31 @@
+{
+  "description": "Capture Codex conversation turns in Spectron.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$PLUGIN_ROOT/hooks/spectron-hook.js\" prompt",
+            "commandWindows": "node \"%PLUGIN_ROOT%\\hooks\\spectron-hook.js\" prompt",
+            "timeout": 10,
+            "statusMessage": "Staging turn for Spectron"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$PLUGIN_ROOT/hooks/spectron-hook.js\" stop",
+            "commandWindows": "node \"%PLUGIN_ROOT%\\hooks\\spectron-hook.js\" stop",
+            "timeout": 45,
+            "statusMessage": "Saving conversation to Spectron"
+          }
+        ]
+      }
+    ]
+  }
+}

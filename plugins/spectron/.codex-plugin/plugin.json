@@ -1,7 +1,7 @@
 {
   "name": "spectron",
-  "version": "0.1.0",
-  "description": "Connect Codex to a Spectron MCP endpoint",
+  "version": "0.2.0",
+  "description": "Connect Codex to Spectron and capture conversation turns",
   "author": {
     "name": "SurrealDB",
     "email": "info@surrealdb.com",
@@ -21,12 +21,14 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Spectron",
-    "shortDescription": "Connect Codex to a Spectron MCP endpoint.",
-    "longDescription": "Use the Spectron plugin to connect Codex to the MCP server exposed by your Spectron instance. Includes a bundled Codex MCP descriptor for the spectron server. The user-provided instance URL is the source of truth and should point to an endpoint such as https://<instance>/mcp.",
+    "shortDescription": "Connect Codex to Spectron with automatic turn capture.",
+    "longDescription": "Use the Spectron plugin to connect Codex to the MCP server exposed by your Spectron instance and automatically capture conversation turns through bundled lifecycle hooks. The user-provided instance URL is the source of truth and should point to an endpoint such as https://<instance>/mcp.",
     "developerName": "SurrealDB",
     "category": "Developer Tools",
     "capabilities": [
       "MCP",
+      "Hooks",
+      "Memory",
       "Remote",
       "Instance"
     ],

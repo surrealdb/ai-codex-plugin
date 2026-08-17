@@ -1,49 +1,50 @@
 {
-	"name": "surrealdb",
-	"version": "0.1.0",
-	"description": "Manage SurrealDB projects and databases",
-	"author": {
-		"name": "SurrealDB",
-		"email": "info@surrealdb.com",
-		"url": "https://surrealdb.com"
-	},
-	"homepage": "https://surrealdb.com/mcp",
-	"repository": "https://github.com/surrealdb/ai-codex-plugin",
-	"license": "Apache-2.0",
-	"keywords": [
-		"surrealdb",
-		"surrealdb-mcp",
-		"mcp",
-		"database",
-		"cloud",
-		"local"
-	],
-	"skills": "./skills/",
-	"mcpServers": "./.mcp.json",
-	"interface": {
-		"displayName": "SurrealDB",
-		"shortDescription": "Manage SurrealDB projects and databases",
-		"longDescription": "Use the SurrealDB plugin to connect Codex to a user-provided SurrealDB MCP endpoint and load official SurrealDB skills. Includes a bundled Codex MCP descriptor for the surrealdb-database server, the database-mcp setup skill, and synced upstream skills for SurrealQL, vector search, SDK usage, and related workflows.",
-		"developerName": "SurrealDB",
-		"category": "Databases",
-		"capabilities": [
-			"MCP",
-			"Database",
-			"Cloud",
-			"Local",
-			"Read",
-			"Write"
-		],
-		"websiteURL": "https://surrealdb.com",
-		"privacyPolicyURL": "https://surrealdb.com/legal/privacy",
-		"termsOfServiceURL": "https://surrealdb.com/legal/msa",
-		"defaultPrompt": [
-			"Use SurrealDB's MCP server",
-			"Inspect my SurrealDB schema",
-			"Set up my SurrealDB MCP endpoint URL"
-		],
-		"logo": "./assets/logo.png",
-		"brandColor": "#FF00A0",
-		"screenshots": []
-	}
+  "name": "surrealdb",
+  "version": "0.2.0+codex.20260817123412",
+  "description": "Manage SurrealDB databases and Cloud resources through the managed OAuth MCP server",
+  "author": {
+    "name": "SurrealDB",
+    "email": "info@surrealdb.com",
+    "url": "https://surrealdb.com"
+  },
+  "homepage": "https://surrealdb.com/mcp",
+  "repository": "https://github.com/surrealdb/ai-codex-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "surrealdb",
+    "surrealdb-mcp",
+    "mcp",
+    "database",
+    "cloud",
+    "oauth"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "SurrealDB",
+    "shortDescription": "Use SurrealDB's managed MCP with Surreal ID sign-in",
+    "longDescription": "Connect Codex to SurrealDB's managed MCP server with OAuth. Work with SurrealQL, schemas, and records, or manage Cloud instances, organizations, access, and spend. The plugin also includes official SurrealDB skills for query design, vector search, SDK usage, and related workflows.",
+    "developerName": "SurrealDB",
+    "category": "Databases",
+    "capabilities": [
+      "MCP",
+      "Database",
+      "Cloud",
+      "OAuth",
+      "Remote",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://surrealdb.com",
+    "privacyPolicyURL": "https://surrealdb.com/legal/privacy",
+    "termsOfServiceURL": "https://surrealdb.com/legal/msa",
+    "defaultPrompt": [
+      "Sign in and show my SurrealDB instances",
+      "Inspect my SurrealDB Cloud schema",
+      "Show my SurrealDB spend this month"
+    ],
+    "logo": "./assets/logo.png",
+    "brandColor": "#FF00A0",
+    "screenshots": []
+  }
 }

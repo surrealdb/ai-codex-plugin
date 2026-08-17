@@ -1,106 +1,119 @@
 # SurrealDB Codex Marketplace
 
-A Codex plugin marketplace from SurrealDB. It currently ships two plugins:
+A Codex plugin marketplace from SurrealDB. It ships three plugins:
 
-| Plugin | What it connects | Ships |
-| --- | --- | --- |
-| [`surrealdb`](plugins/surrealdb/) | Your SurrealDB instance's `/mcp` route | Instance MCP plus SurrealDB skills for SurrealQL, vector search, SDK usage, and related workflows |
-| [`spectron`](plugins/spectron/) | Your Spectron instance's `/mcp` route | Instance MCP plus a Spectron usage skill |
+| Plugin | What it connects | Ships | Setup |
+| --- | --- | --- | --- |
+| [`surrealdb`](plugins/surrealdb/) | SurrealDB's managed MCP at `https://mcp.surrealdb.com` | MCP server plus official SurrealDB skills | Sign in with your Surreal ID |
+| [`spectron`](plugins/spectron/) | The same managed MCP at `https://mcp.surrealdb.com` | MCP server plus optional Codex turn-capture hooks | Sign in with your Surreal ID; hook configuration is optional |
+| [`surrealdb-local`](plugins/surrealdb-local/) | A local, self-hosted, or air-gapped SurrealDB instance | Instance MCP plus a setup skill | Set the instance URL and bearer token |
+
+The managed plugins are zero-config: install one, then complete the browser sign-in when Codex first authenticates it. Use `surrealdb-local` when the target database is on `localhost`, a private network, or infrastructure that SurrealDB's managed MCP cannot reach.
 
 ## Requirements
 
 - Codex with local marketplace support.
-- A SurrealDB or Spectron instance that exposes MCP over HTTP.
-- The instance MCP endpoint URL, typically `https://<instance>/mcp`.
+- A Surreal ID for the managed `surrealdb` and `spectron` plugins.
+- For `surrealdb-local`, a SurrealDB instance exposing its built-in `/mcp` HTTP route and a scoped access token or JWT.
 
 ## Install From GitHub
 
-Add this repo as a marketplace, then install whichever plugins you want:
+Add this repository as a marketplace, then install the plugins you need:
 
 ```sh
 codex plugin marketplace add surrealdb/ai-codex-plugin --ref main
 codex plugin add surrealdb@surrealdb
 codex plugin add spectron@surrealdb
+codex plugin add surrealdb-local@surrealdb
 ```
 
 ## Install From A Local Checkout
 
 The repo-local marketplace manifest lives at `.agents/plugins/marketplace.json`.
 
-From this repository root, add the marketplace:
-
 ```sh
 codex plugin marketplace add "$PWD"
-```
-
-Then install either plugin from the `surrealdb` marketplace:
-
-```sh
 codex plugin add surrealdb@surrealdb
 codex plugin add spectron@surrealdb
+codex plugin add surrealdb-local@surrealdb
 ```
 
-## MCP Configuration
+Start a new Codex task after installing or updating a plugin so the task picks up its skills and MCP tools.
 
-Each plugin bundles a Codex `.mcp.json` descriptor. The endpoint URLs are instance-specific, so set the environment variables before starting Codex or before opening a new task that should use the MCP tools.
+## Managed MCP (`surrealdb` and `spectron`)
 
-For SurrealDB:
+Both managed plugins connect to:
+
+| Server name | Endpoint | Authentication |
+| --- | --- | --- |
+| `surrealdb` | `https://mcp.surrealdb.com` | OAuth with your Surreal ID |
+| `spectron` | `https://mcp.surrealdb.com` | OAuth with your Surreal ID |
+
+Use the bare root URL exactly as shown. Do not append `/mcp` or `/sse` to the managed endpoint.
+
+The endpoint exposes SurrealDB data-plane tools, SurrealDB account and infrastructure tools, and Spectron memory tools. Installing both plugins can therefore surface the same managed tools under two server names. This is harmless; install only one if you do not want the duplicate tool surface.
+
+If you manually register the managed endpoint instead of using the plugins, use:
 
 ```sh
-export SURREALDB_MCP_URL="https://<instance>/mcp"
+codex mcp add surrealdb --url https://mcp.surrealdb.com
+codex mcp login surrealdb
+```
+
+For a headless or unattended environment, create a personal access token at <https://account.surrealdb.com/tokens>, put it in an environment variable, and register the server with bearer-token authentication:
+
+```sh
+export SURREALDB_MCP_TOKEN="<personal-access-token>"
+codex mcp add surrealdb \
+  --url https://mcp.surrealdb.com \
+  --bearer-token-env-var SURREALDB_MCP_TOKEN
+```
+
+## Local and Self-hosted MCP (`surrealdb-local`)
+
+The managed server cannot reach `localhost` or private-network instances. The `surrealdb-local` plugin connects directly to an instance's built-in `/mcp` route:
+
+```sh
+export SURREALDB_MCP_URL="http://127.0.0.1:8000/mcp"
 export SURREALDB_MCP_TOKEN="<access-token-or-jwt>"
 ```
 
-For Spectron:
-
-```sh
-export SPECTRON_MCP_URL="https://<instance>/mcp"
-export SPECTRON_MCP_TOKEN="<access-token-or-jwt>"
-export SPECTRON_CONTEXT_ID="<context-id>"
-```
-
-The bundled MCP server names are:
-
-- `surrealdb-database`
-- `spectron`
-
-If you prefer manual Codex MCP configuration instead of the bundled plugin descriptors, add the servers directly:
-
-```sh
-codex mcp add surrealdb-database \
-  --url "https://<instance>/mcp" \
-  --bearer-token-env-var SURREALDB_MCP_TOKEN
-
-codex mcp add spectron \
-  --url "https://<instance>/mcp" \
-  --bearer-token-env-var SPECTRON_MCP_TOKEN
-```
-
-If the endpoint supports OAuth, authenticate after adding it manually with `codex mcp login surrealdb-database` or `codex mcp login spectron`.
-
-For local development, you can still prefer the built-in stdio transport:
-
-```sh
-codex mcp add surrealdb-database -- surreal mcp stdio
-```
+Use a scoped database user rather than root. The instance turns the request's bearer token into a real session, so the token's permissions are the permissions Codex receives.
 
 Important:
 
-- A `surreal-bearer-...` value is a bearer grant key, not automatically the token to send to `/mcp`.
-- Bearer grant keys must first be exchanged through SurrealDB auth, typically `POST /signin` with the correct namespace, database, access method, and `key`, to obtain a JWT or session token.
-- Use that resulting access token for HTTP MCP auth.
+- The URL must include `/mcp` for an instance you run; this is different from the managed endpoint's bare root URL.
+- Operators can disable the route with `--deny-http mcp`. Check that capability when a healthy instance returns 404 for `/mcp`.
+- A `surreal-bearer-...` grant key is not automatically an HTTP access token. Exchange signin credentials or a grant key for a JWT/session token before using it as `SURREALDB_MCP_TOKEN`.
+- Do not substitute `surreal mcp` for this connection. The stdio command starts its own embedded datastore instead of attaching to the running instance.
 
-## How It Works
+For equivalent manual Codex configuration:
 
-Each plugin installs skills, presentation metadata, and a Codex MCP descriptor. The descriptors intentionally read endpoints and bearer tokens from environment variables because the URL depends on the user's SurrealDB or Spectron instance.
+```sh
+codex mcp add surrealdb-local \
+  --url "$SURREALDB_MCP_URL" \
+  --bearer-token-env-var SURREALDB_MCP_TOKEN
+```
 
-The Spectron plugin also bundles `UserPromptSubmit` and `Stop` lifecycle hooks. Once trusted in Codex, they send completed user/assistant turns through the bundled official `@surrealdb/spectron` TypeScript SDK to Spectron's `/facts/batch` endpoint, with whole-conversation extraction and stable per-turn idempotency keys. The hook derives the REST base URL and API key from `SPECTRON_MCP_URL` and `SPECTRON_MCP_TOKEN`; `SPECTRON_CONTEXT_ID` selects the target Context. Recording failures are logged but never block a Codex turn.
+## Optional Spectron Turn Capture
+
+The Spectron plugin's managed MCP server needs only OAuth. Its Codex hooks are separate: once trusted, `UserPromptSubmit` stages the user prompt locally and `Stop` sends each completed user/assistant turn through the bundled official `@surrealdb/spectron` SDK to Spectron's `/facts/batch` API.
+
+Configure the hooks only if you want automatic turn capture:
+
+```sh
+export SPECTRON_MCP_URL="https://your-spectron-instance.example.com/mcp"
+export SPECTRON_MCP_TOKEN="<bearer-token-or-api-key>"
+export SPECTRON_CONTEXT_ID="<context-id>"
+```
+
+The hooks cannot reuse Codex's OAuth credential store, so they need their own endpoint, token, and Context id. A default install with those variables unset transmits and retains no conversation content; the managed MCP tools still work on demand.
+
+Codex requires the user to review and trust plugin hooks before they run. Use `/hooks` in Codex CLI to inspect their status. Delivery failures never block a turn, and completed turns remain in the plugin's writable data directory for a retry with the same idempotency key. Set `SPECTRON_HOOK_VERBOSE=1` for a one-line capture status.
 
 ## Upstream Skill Sync
 
-This repo treats [`surrealdb/agent-skills`](https://github.com/surrealdb/agent-skills) as the upstream source for general SurrealDB knowledge skills.
-
-To sync those skills into the Codex plugin:
+This repository treats [`surrealdb/agent-skills`](https://github.com/surrealdb/agent-skills) as the upstream source for general SurrealDB knowledge skills.
 
 ```sh
 ./scripts/sync-agent-skills.sh
@@ -112,36 +125,29 @@ To sync from a local checkout instead of cloning:
 ./scripts/sync-agent-skills.sh --source /path/to/agent-skills
 ```
 
-Notes:
+Synced skills are written to `plugins/surrealdb/skills/<skill-name>/`. The local `surrealdb-mcp` skill is protected from sync, and each upstream skill's `references/` directory is copied with it.
 
-- Synced skills are written into `plugins/surrealdb/skills/<skill-name>/`.
-- The local `plugins/surrealdb/skills/database-mcp/` skill is protected and is not overwritten by the sync script.
-- If an upstream skill contains a `references/` directory, it is copied alongside `SKILL.md`.
-- The sync script itself is the source of truth for the upstream repo and ref.
+## Usage and Safety
 
-## Usage
+Once a plugin is installed and authenticated, ask Codex things like:
 
-Once the plugin is installed and the MCP server is configured, ask Codex things like:
-
-- Inspect my SurrealDB schema.
-- Run a read-only SurrealQL query.
-- Explore records in this namespace and database.
-- Help me troubleshoot my SurrealDB MCP connection.
-- Help me troubleshoot my Spectron MCP connection.
-- Write a SurrealQL query for graph traversal.
+- Sign me in to SurrealDB and show me my instances.
+- Inspect the schema in my Cloud database.
+- What have I spent on SurrealDB this month?
+- Connect to my local SurrealDB and run a read-only query.
+- Inspect my Spectron memory tools.
+- Write an idiomatic SurrealQL graph traversal.
 - Create an HNSW vector index for semantic search.
-- Show how to connect to SurrealDB from Python.
 
-Treat mutation requests as real database operations. Confirm intent before schema changes, bulk writes, deletes, permission changes, or storage changes.
+Treat mutation requests as real database, account, or memory operations. Confirm intent before schema changes, bulk writes, deletes, permission changes, billable infrastructure changes, organization-access changes, or broad memory mutations.
 
 ## Troubleshooting
 
-If tools do not appear, confirm the URL points to an MCP endpoint, not a normal SQL, REST, or WebSocket endpoint.
+- Managed authentication failure: complete the Surreal ID browser sign-in. For manual registrations, run `codex mcp login surrealdb`.
+- Managed endpoint 404: confirm the URL is exactly `https://mcp.surrealdb.com`, without `/mcp` or `/sse`.
+- Local endpoint 404: confirm the URL includes `/mcp` and the instance was not started with `--deny-http mcp`.
+- Local `InvalidToken`: confirm `SURREALDB_MCP_TOKEN` contains the final access token or JWT, not a bearer grant key.
+- Missing tools after install or update: start a new Codex task.
+- Missing Spectron capture: open `/hooks`, trust the hook, and verify the three `SPECTRON_*` variables above.
 
-If `Authorization: Bearer surreal-bearer-...` returns `InvalidToken`, you are likely sending a bearer grant key directly to `/mcp`. Exchange it for a JWT first, or switch to `surreal mcp stdio` for local use.
-
-If authentication fails with `--bearer-token-env-var`, confirm the env var contains the final access token or JWT, not the bearer grant key.
-
-If automatic Spectron turn capture does not run, open `/hooks` in Codex CLI and trust the plugin's hook definition. Confirm `SPECTRON_CONTEXT_ID` is set, and set `SPECTRON_HOOK_VERBOSE=1` for a one-line status after each hook invocation.
-
-Use `codex mcp get surrealdb-database`, `codex mcp get spectron`, or `codex mcp list` to inspect the current configuration.
+Use `codex mcp get surrealdb`, `codex mcp get spectron`, `codex mcp get surrealdb-local`, or `codex mcp list` to inspect MCP configuration.

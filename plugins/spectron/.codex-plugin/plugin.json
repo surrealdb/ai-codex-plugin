@@ -1,7 +1,7 @@
 {
   "name": "spectron",
-  "version": "0.2.0",
-  "description": "Connect Codex to Spectron and capture conversation turns",
+  "version": "0.3.0",
+  "description": "Use Spectron through the managed OAuth MCP server with optional Codex turn capture",
   "author": {
     "name": "SurrealDB",
     "email": "info@surrealdb.com",
@@ -15,14 +15,14 @@
     "spectron-mcp",
     "surrealdb",
     "mcp",
-    "instance"
+    "oauth"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Spectron",
-    "shortDescription": "Connect Codex to Spectron with automatic turn capture.",
-    "longDescription": "Use the Spectron plugin to connect Codex to the MCP server exposed by your Spectron instance and automatically capture conversation turns through bundled lifecycle hooks. The user-provided instance URL is the source of truth and should point to an endpoint such as https://<instance>/mcp.",
+    "shortDescription": "Use Spectron with OAuth and optional turn capture",
+    "longDescription": "Connect Codex to Spectron through SurrealDB's managed OAuth MCP server for on-demand memory and context management. Optional Codex lifecycle hooks can capture completed conversation turns to a separately configured Spectron instance and Context.",
     "developerName": "SurrealDB",
     "category": "Developer Tools",
     "capabilities": [
@@ -30,15 +30,15 @@
       "Hooks",
       "Memory",
       "Remote",
-      "Instance"
+      "OAuth"
     ],
     "websiteURL": "https://surrealdb.com/platforms/spectron",
     "privacyPolicyURL": "https://surrealdb.com/legal/privacy",
     "termsOfServiceURL": "https://surrealdb.com/legal/msa",
     "defaultPrompt": [
-      "Connect my Spectron MCP endpoint",
-      "Inspect my Spectron MCP tools",
-      "Troubleshoot my Spectron connection"
+      "Sign in and inspect my Spectron tools",
+      "Show memories relevant to this project",
+      "Explain Spectron automatic turn capture"
     ],
     "brandColor": "#00C2FF",
     "screenshots": []

@@ -1,0 +1,48 @@
+{
+	"name": "surrealdb-local",
+	"version": "0.1.0",
+	"description": "Connect Codex to a local or self-hosted SurrealDB instance through its built-in MCP route",
+	"author": {
+		"name": "SurrealDB",
+		"email": "info@surrealdb.com",
+		"url": "https://surrealdb.com"
+	},
+	"homepage": "https://surrealdb.com/mcp",
+	"repository": "https://github.com/surrealdb/ai-codex-plugin",
+	"license": "Apache-2.0",
+	"keywords": [
+		"surrealdb",
+		"surrealdb-mcp",
+		"mcp",
+		"database",
+		"local",
+		"self-hosted"
+	],
+	"skills": "./skills/",
+	"mcpServers": "./.mcp.json",
+	"interface": {
+		"displayName": "SurrealDB Local",
+		"shortDescription": "Connect to a SurrealDB instance you run",
+		"longDescription": "Connect Codex directly to the built-in MCP HTTP route of a local, self-hosted, private-network, or air-gapped SurrealDB instance. The plugin includes Codex-specific setup, authentication, routing, troubleshooting, and safety guidance.",
+		"developerName": "SurrealDB",
+		"category": "Databases",
+		"capabilities": [
+			"MCP",
+			"Database",
+			"Local",
+			"Self-hosted",
+			"Read",
+			"Write"
+		],
+		"websiteURL": "https://surrealdb.com",
+		"privacyPolicyURL": "https://surrealdb.com/legal/privacy",
+		"termsOfServiceURL": "https://surrealdb.com/legal/msa",
+		"defaultPrompt": [
+			"Connect to my local SurrealDB instance",
+			"Inspect my self-hosted database schema",
+			"Troubleshoot my local MCP connection"
+		],
+		"brandColor": "#FF00A0",
+		"screenshots": []
+	}
+}

@@ -11,10 +11,10 @@ const {
 	recordPrompt,
 	resolveConfig,
 	stateFileFor,
-} = require("../plugins/spectron/hooks/spectron-hook");
+} = require("../plugins/agent-memory/hooks/agent-memory-hook");
 
 function tempDir() {
-	return fs.mkdtempSync(path.join(os.tmpdir(), "spectron-codex-hook-"));
+	return fs.mkdtempSync(path.join(os.tmpdir(), "agent-memory-codex-hook-"));
 }
 
 const fixedDate = () => new Date("2026-07-22T12:00:00.000Z");
@@ -22,12 +22,12 @@ const fixedDate = () => new Date("2026-07-22T12:00:00.000Z");
 test("resolveConfig reuses the plugin MCP endpoint and token", () => {
 	assert.deepEqual(
 		resolveConfig({
-			SPECTRON_MCP_URL: "https://example.spectron.cloud/mcp",
-			SPECTRON_MCP_TOKEN: "secret",
-			SPECTRON_CONTEXT_ID: "acme",
+			AGENT_MEMORY_MCP_URL: "https://example.agent-memory.cloud/mcp",
+			AGENT_MEMORY_MCP_TOKEN: "secret",
+			AGENT_MEMORY_CONTEXT_ID: "acme",
 		}),
 		{
-			baseUrl: "https://example.spectron.cloud",
+			baseUrl: "https://example.agent-memory.cloud",
 			apiKey: "secret",
 			contextId: "acme",
 		},
@@ -41,7 +41,7 @@ test("recordPrompt stages and deduplicates a turn", () => {
 		{
 			stateDir,
 			now: fixedDate,
-			env: { SPECTRON_CONTEXT_ID: "acme", SPECTRON_API_KEY: "secret" },
+			env: { AGENT_MEMORY_CONTEXT_ID: "acme", AGENT_MEMORY_API_KEY: "secret" },
 		},
 	);
 	recordPrompt(
@@ -49,7 +49,7 @@ test("recordPrompt stages and deduplicates a turn", () => {
 		{
 			stateDir,
 			now: fixedDate,
-			env: { SPECTRON_CONTEXT_ID: "acme", SPECTRON_API_KEY: "secret" },
+			env: { AGENT_MEMORY_CONTEXT_ID: "acme", AGENT_MEMORY_API_KEY: "secret" },
 		},
 	);
 
@@ -67,7 +67,7 @@ test("flushTurn sends a retry-safe whole-conversation batch", async () => {
 		{
 			stateDir,
 			now: fixedDate,
-			env: { SPECTRON_CONTEXT_ID: "acme", SPECTRON_API_KEY: "secret" },
+			env: { AGENT_MEMORY_CONTEXT_ID: "acme", AGENT_MEMORY_API_KEY: "secret" },
 		},
 	);
 
@@ -81,9 +81,9 @@ test("flushTurn sends a retry-safe whole-conversation batch", async () => {
 			stateDir,
 			now: fixedDate,
 			env: {
-				SPECTRON_MCP_URL: "https://example.test/mcp",
-				SPECTRON_MCP_TOKEN: "secret",
-				SPECTRON_CONTEXT_ID: "acme",
+				AGENT_MEMORY_MCP_URL: "https://example.test/mcp",
+				AGENT_MEMORY_MCP_TOKEN: "secret",
+				AGENT_MEMORY_CONTEXT_ID: "acme",
 			},
 			fetchImpl: async (url, options) => {
 				calls.push({ url, options });
@@ -117,7 +117,7 @@ test("flushTurn preserves staged prompts when delivery fails", async () => {
 		{
 			stateDir,
 			now: fixedDate,
-			env: { SPECTRON_CONTEXT_ID: "acme", SPECTRON_API_KEY: "secret" },
+			env: { AGENT_MEMORY_CONTEXT_ID: "acme", AGENT_MEMORY_API_KEY: "secret" },
 		},
 	);
 
@@ -130,7 +130,7 @@ test("flushTurn preserves staged prompts when delivery fails", async () => {
 			},
 			{
 				stateDir,
-				env: { SPECTRON_CONTEXT_ID: "acme", SPECTRON_API_KEY: "secret" },
+				env: { AGENT_MEMORY_CONTEXT_ID: "acme", AGENT_MEMORY_API_KEY: "secret" },
 				fetchImpl: async () => new Response("unavailable", { status: 503 }),
 				retries: 0,
 			},
@@ -148,7 +148,7 @@ test("flushTurn preserves staged prompts when delivery fails", async () => {
 
 test("a later stop retries each queued turn with its original idempotency key", async () => {
 	const stateDir = tempDir();
-	const env = { SPECTRON_CONTEXT_ID: "acme", SPECTRON_API_KEY: "secret" };
+	const env = { AGENT_MEMORY_CONTEXT_ID: "acme", AGENT_MEMORY_API_KEY: "secret" };
 	recordPrompt(
 		{ session_id: "session-d", turn_id: "turn-1", prompt: "one" },
 		{ stateDir, now: fixedDate, env },

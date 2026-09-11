@@ -5,6 +5,8 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+// Vendored @surrealdb/spectron@1.0.0-alpha.1; the export keeps the name it
+// was published under. Re-vendoring onto @surrealdb/memory is a separate job.
 const { Spectron } = require("../vendor/spectron.cjs");
 
 const DEFAULT_BASE_URL = "http://localhost:8080";
@@ -38,13 +40,13 @@ function stripMcpPath(value) {
 function resolveConfig(env = process.env) {
 	return {
 		baseUrl: (
-			env.SPECTRON_BASE_URL ||
-			env.SPECTRON_URL ||
-			stripMcpPath(env.SPECTRON_MCP_URL) ||
+			env.AGENT_MEMORY_BASE_URL ||
+			env.AGENT_MEMORY_URL ||
+			stripMcpPath(env.AGENT_MEMORY_MCP_URL) ||
 			DEFAULT_BASE_URL
 		).replace(/\/+$/, ""),
-		apiKey: env.SPECTRON_API_KEY || env.SPECTRON_MCP_TOKEN || "",
-		contextId: env.SPECTRON_CONTEXT_ID || env.SPECTRON_CONTEXT || "",
+		apiKey: env.AGENT_MEMORY_API_KEY || env.AGENT_MEMORY_MCP_TOKEN || "",
+		contextId: env.AGENT_MEMORY_CONTEXT_ID || env.AGENT_MEMORY_CONTEXT || "",
 	};
 }
 
@@ -53,7 +55,7 @@ function isConfigured(config) {
 }
 
 function defaultStateDir(env = process.env) {
-	const root = env.PLUGIN_DATA || path.join(os.homedir(), ".codex", "spectron-state");
+	const root = env.PLUGIN_DATA || path.join(os.homedir(), ".codex", "agent-memory-state");
 	return path.join(root, "turn-capture");
 }
 
@@ -119,7 +121,7 @@ function recordPrompt(payload, options = {}) {
 	return { staged: true };
 }
 
-function createSpectronClient(config, options = {}) {
+function createAgentMemoryClient(config, options = {}) {
 	const fetchImpl = options.fetchImpl || globalThis.fetch;
 	if (!fetchImpl) throw new Error("global fetch is unavailable; Node.js 18 or newer is required");
 	const fetchWithStableIdempotency = (url, init = {}) => {
@@ -168,7 +170,7 @@ async function flushTurn(payload, options = {}) {
 	for (const turn of [...state.turns]) {
 		if (!turn.messages.some((message) => message.role === "assistant")) continue;
 		const messages = turn.messages.map(({ role, content, ts }) => ({ role, content, ts }));
-		const client = createSpectronClient(config, {
+		const client = createAgentMemoryClient(config, {
 				fetchImpl: options.fetchImpl,
 				retries: options.retries,
 				timeoutMs: options.timeoutMs,
@@ -196,11 +198,11 @@ async function main() {
 		if (event === "prompt") result = recordPrompt(payload);
 		else if (event === "stop") result = await flushTurn(payload);
 		else throw new Error(`unknown hook event: ${event || "(missing)"}`);
-		if (process.env.SPECTRON_HOOK_VERBOSE) {
-			process.stderr.write(`spectron-hook: ${event} ${JSON.stringify(result)}\n`);
+		if (process.env.AGENT_MEMORY_HOOK_VERBOSE) {
+			process.stderr.write(`agent-memory-hook: ${event} ${JSON.stringify(result)}\n`);
 		}
 	} catch (err) {
-		process.stderr.write(`spectron-hook: ${err.message}\n`);
+		process.stderr.write(`agent-memory-hook: ${err.message}\n`);
 	}
 	// Recording failures must never interrupt or continue the Codex turn.
 	process.stdout.write('{"continue":true}\n');
@@ -211,7 +213,7 @@ if (require.main === module) {
 }
 
 module.exports = {
-	createSpectronClient,
+	createAgentMemoryClient,
 	defaultStateDir,
 	flushTurn,
 	recordPrompt,

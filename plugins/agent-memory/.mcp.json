@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "spectron": {
+    "agent-memory": {
       "type": "http",
       "url": "https://mcp.surrealdb.com"
     }

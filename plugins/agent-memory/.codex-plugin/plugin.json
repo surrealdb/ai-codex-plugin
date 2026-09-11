@@ -1,0 +1,46 @@
+{
+  "name": "agent-memory",
+  "version": "0.4.0",
+  "description": "Use SurrealDB Agent Memory through the managed OAuth MCP server with optional Codex turn capture",
+  "author": {
+    "name": "SurrealDB",
+    "email": "info@surrealdb.com",
+    "url": "https://surrealdb.com"
+  },
+  "homepage": "https://mcp.surrealdb.com",
+  "repository": "https://github.com/surrealdb/ai-codex-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "agent-memory",
+    "agent-memory-mcp",
+    "surrealdb",
+    "mcp",
+    "oauth"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Agent Memory",
+    "shortDescription": "Use SurrealDB Agent Memory with OAuth and optional turn capture",
+    "longDescription": "Connect Codex to SurrealDB Agent Memory through SurrealDB's managed OAuth MCP server for on-demand memory and context management. Optional Codex lifecycle hooks can capture completed conversation turns to a separately configured Agent Memory instance and Context.",
+    "developerName": "SurrealDB",
+    "category": "Developer Tools",
+    "capabilities": [
+      "MCP",
+      "Hooks",
+      "Memory",
+      "Remote",
+      "OAuth"
+    ],
+    "websiteURL": "https://surrealdb.com/agent-memory",
+    "privacyPolicyURL": "https://surrealdb.com/legal/privacy",
+    "termsOfServiceURL": "https://surrealdb.com/legal/msa",
+    "defaultPrompt": [
+      "Sign in and inspect my Agent Memory tools",
+      "Show memories relevant to this project",
+      "Explain Agent Memory automatic turn capture"
+    ],
+    "brandColor": "#00C2FF",
+    "screenshots": []
+  }
+}

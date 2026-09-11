@@ -13,4 +13,4 @@ plugin and never need to run `npm install` or `npx` during a conversation.
 
 To update it, download the intended package version with `npm pack`, replace
 `dist/spectron.cjs`, copy the package license, update the version and checksum
-above, and rerun `node --test tests/spectron-hook.test.js`.
+above, and rerun `node --test tests/agent-memory-hook.test.js`.

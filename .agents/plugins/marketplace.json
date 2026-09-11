@@ -17,10 +17,10 @@
 			"category": "Databases"
 		},
 		{
-			"name": "spectron",
+			"name": "agent-memory",
 			"source": {
 				"source": "local",
-				"path": "./plugins/spectron"
+				"path": "./plugins/agent-memory"
 			},
 			"policy": {
 				"installation": "AVAILABLE",

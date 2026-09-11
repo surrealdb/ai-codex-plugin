@@ -111,8 +111,6 @@ The hooks cannot reuse Codex's OAuth credential store, so they need their own en
 
 Codex requires the user to review and trust plugin hooks before they run. Use `/hooks` in Codex CLI to inspect their status. Delivery failures never block a turn, and completed turns remain in the plugin's writable data directory for a retry with the same idempotency key. Set `AGENT_MEMORY_HOOK_VERBOSE=1` for a one-line capture status.
 
-The pre-rename `SPECTRON_*` spellings are **deprecated**. They are still honoured so the rename does not silently stop turn capture for anyone already configured, but the hook writes a warning to stderr naming each one in use, and support will be removed in a future release.
-
 ## Upstream Skill Sync
 
 This repository treats [`surrealdb/agent-skills`](https://github.com/surrealdb/agent-skills) as the upstream source for general SurrealDB knowledge skills.

@@ -7,7 +7,6 @@ const path = require("node:path");
 const test = require("node:test");
 
 const {
-	deprecatedEnvNames,
 	flushTurn,
 	recordPrompt,
 	resolveConfig,
@@ -203,61 +202,4 @@ test("an unconfigured hook does not retain conversation content", async () => {
 		{ sent: 0, reason: "not configured" },
 	);
 	assert.equal(fs.existsSync(stateFileFor("session-e", stateDir)), false);
-});
-
-test("resolveConfig still honours the pre-rename SPECTRON_* names", () => {
-	assert.deepEqual(
-		resolveConfig({
-			SPECTRON_MCP_URL: "https://old.example/mcp",
-			SPECTRON_MCP_TOKEN: "old-secret",
-			SPECTRON_CONTEXT_ID: "old-ctx",
-		}),
-		{
-			baseUrl: "https://old.example",
-			apiKey: "old-secret",
-			contextId: "old-ctx",
-		},
-	);
-});
-
-test("resolveConfig prefers AGENT_MEMORY_* over SPECTRON_*", () => {
-	assert.deepEqual(
-		resolveConfig({
-			AGENT_MEMORY_MCP_URL: "https://new.example/mcp",
-			AGENT_MEMORY_MCP_TOKEN: "new-secret",
-			AGENT_MEMORY_CONTEXT_ID: "new-ctx",
-			SPECTRON_MCP_URL: "https://old.example/mcp",
-			SPECTRON_MCP_TOKEN: "old-secret",
-			SPECTRON_CONTEXT_ID: "old-ctx",
-		}),
-		{
-			baseUrl: "https://new.example",
-			apiKey: "new-secret",
-			contextId: "new-ctx",
-		},
-	);
-});
-
-test("deprecatedEnvNames reports legacy variables the hook falls back to", () => {
-	assert.deepEqual(
-		deprecatedEnvNames({
-			SPECTRON_MCP_URL: "https://old.example/mcp",
-			SPECTRON_CONTEXT_ID: "old-ctx",
-		}),
-		["SPECTRON_MCP_URL -> AGENT_MEMORY_MCP_URL", "SPECTRON_CONTEXT_ID -> AGENT_MEMORY_CONTEXT_ID"],
-	);
-});
-
-test("deprecatedEnvNames stays quiet when the replacement is set", () => {
-	assert.deepEqual(
-		deprecatedEnvNames({
-			AGENT_MEMORY_MCP_URL: "https://new.example/mcp",
-			SPECTRON_MCP_URL: "https://old.example/mcp",
-		}),
-		[],
-	);
-});
-
-test("deprecatedEnvNames is empty for a clean environment", () => {
-	assert.deepEqual(deprecatedEnvNames({ AGENT_MEMORY_CONTEXT_ID: "acme" }), []);
 });

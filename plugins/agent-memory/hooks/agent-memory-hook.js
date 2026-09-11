@@ -9,31 +9,6 @@ const path = require("node:path");
 // was published under. Re-vendoring onto @surrealdb/memory is a separate job.
 const { Spectron } = require("../vendor/spectron.cjs");
 
-// Pre-rename variable names, still honoured so the rename does not silently
-// stop turn capture for anyone already configured. Deprecated: each use is
-// reported on stderr, and these will be dropped in a future release.
-const DEPRECATED_ENV = [
-	["AGENT_MEMORY_BASE_URL", "SPECTRON_BASE_URL"],
-	["AGENT_MEMORY_URL", "SPECTRON_URL"],
-	["AGENT_MEMORY_MCP_URL", "SPECTRON_MCP_URL"],
-	["AGENT_MEMORY_API_KEY", "SPECTRON_API_KEY"],
-	["AGENT_MEMORY_MCP_TOKEN", "SPECTRON_MCP_TOKEN"],
-	["AGENT_MEMORY_CONTEXT_ID", "SPECTRON_CONTEXT_ID"],
-	["AGENT_MEMORY_CONTEXT", "SPECTRON_CONTEXT"],
-	["AGENT_MEMORY_HOOK_VERBOSE", "SPECTRON_HOOK_VERBOSE"],
-];
-
-/**
- * Deprecated variables the hook is actually falling back to: set, with their
- * replacement unset. One whose replacement is also set is simply ignored, so
- * warning about it would be noise.
- */
-function deprecatedEnvNames(env = process.env) {
-	return DEPRECATED_ENV.filter(
-		([current, legacy]) => env[legacy] && !env[current],
-	).map(([current, legacy]) => `${legacy} -> ${current}`);
-}
-
 const DEFAULT_BASE_URL = "http://localhost:8080";
 const DEFAULT_TIMEOUT_MS = 10_000;
 
@@ -68,23 +43,10 @@ function resolveConfig(env = process.env) {
 			env.AGENT_MEMORY_BASE_URL ||
 			env.AGENT_MEMORY_URL ||
 			stripMcpPath(env.AGENT_MEMORY_MCP_URL) ||
-			env.SPECTRON_BASE_URL ||
-			env.SPECTRON_URL ||
-			stripMcpPath(env.SPECTRON_MCP_URL) ||
 			DEFAULT_BASE_URL
 		).replace(/\/+$/, ""),
-		apiKey:
-			env.AGENT_MEMORY_API_KEY ||
-			env.AGENT_MEMORY_MCP_TOKEN ||
-			env.SPECTRON_API_KEY ||
-			env.SPECTRON_MCP_TOKEN ||
-			"",
-		contextId:
-			env.AGENT_MEMORY_CONTEXT_ID ||
-			env.AGENT_MEMORY_CONTEXT ||
-			env.SPECTRON_CONTEXT_ID ||
-			env.SPECTRON_CONTEXT ||
-			"",
+		apiKey: env.AGENT_MEMORY_API_KEY || env.AGENT_MEMORY_MCP_TOKEN || "",
+		contextId: env.AGENT_MEMORY_CONTEXT_ID || env.AGENT_MEMORY_CONTEXT || "",
 	};
 }
 
@@ -93,7 +55,7 @@ function isConfigured(config) {
 }
 
 function defaultStateDir(env = process.env) {
-	const root = env.PLUGIN_DATA || path.join(os.homedir(), ".codex", "spectron-state")  // unchanged: renaming orphans staged turns;
+	const root = env.PLUGIN_DATA || path.join(os.homedir(), ".codex", "agent-memory-state");
 	return path.join(root, "turn-capture");
 }
 
@@ -229,14 +191,6 @@ async function flushTurn(payload, options = {}) {
 
 async function main() {
 	const event = process.argv[2];
-	const deprecated = deprecatedEnvNames();
-	if (deprecated.length > 0) {
-		process.stderr.write(
-			`agent-memory-hook: deprecated environment variables in use, ` +
-				`rename them before a future release drops support: ` +
-				`${deprecated.join(", ")}\n`,
-		);
-	}
 	let payload;
 	try {
 		payload = JSON.parse(await readStdin());
@@ -244,7 +198,7 @@ async function main() {
 		if (event === "prompt") result = recordPrompt(payload);
 		else if (event === "stop") result = await flushTurn(payload);
 		else throw new Error(`unknown hook event: ${event || "(missing)"}`);
-		if (process.env.AGENT_MEMORY_HOOK_VERBOSE || process.env.SPECTRON_HOOK_VERBOSE) {
+		if (process.env.AGENT_MEMORY_HOOK_VERBOSE) {
 			process.stderr.write(`agent-memory-hook: ${event} ${JSON.stringify(result)}\n`);
 		}
 	} catch (err) {
@@ -260,7 +214,6 @@ if (require.main === module) {
 
 module.exports = {
 	createAgentMemoryClient,
-	deprecatedEnvNames,
 	defaultStateDir,
 	flushTurn,
 	recordPrompt,

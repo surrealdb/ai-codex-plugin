@@ -7,6 +7,7 @@ const path = require("node:path");
 const test = require("node:test");
 
 const {
+	deprecatedEnvNames,
 	flushTurn,
 	recordPrompt,
 	resolveConfig,
@@ -235,4 +236,28 @@ test("resolveConfig prefers AGENT_MEMORY_* over SPECTRON_*", () => {
 			contextId: "new-ctx",
 		},
 	);
+});
+
+test("deprecatedEnvNames reports legacy variables the hook falls back to", () => {
+	assert.deepEqual(
+		deprecatedEnvNames({
+			SPECTRON_MCP_URL: "https://old.example/mcp",
+			SPECTRON_CONTEXT_ID: "old-ctx",
+		}),
+		["SPECTRON_MCP_URL -> AGENT_MEMORY_MCP_URL", "SPECTRON_CONTEXT_ID -> AGENT_MEMORY_CONTEXT_ID"],
+	);
+});
+
+test("deprecatedEnvNames stays quiet when the replacement is set", () => {
+	assert.deepEqual(
+		deprecatedEnvNames({
+			AGENT_MEMORY_MCP_URL: "https://new.example/mcp",
+			SPECTRON_MCP_URL: "https://old.example/mcp",
+		}),
+		[],
+	);
+});
+
+test("deprecatedEnvNames is empty for a clean environment", () => {
+	assert.deepEqual(deprecatedEnvNames({ AGENT_MEMORY_CONTEXT_ID: "acme" }), []);
 });

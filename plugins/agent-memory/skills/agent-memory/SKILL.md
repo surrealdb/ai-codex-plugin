@@ -42,7 +42,7 @@ export AGENT_MEMORY_CONTEXT_ID="<context-id>"
 - The hook removes the trailing `/mcp` from `AGENT_MEMORY_MCP_URL` to derive the Agent Memory REST base URL.
 - `AGENT_MEMORY_CONTEXT` is accepted as a compatibility alias for `AGENT_MEMORY_CONTEXT_ID`.
 - `AGENT_MEMORY_URL` or `AGENT_MEMORY_BASE_URL`, and `AGENT_MEMORY_API_KEY`, can explicitly override the derived REST URL and token.
-- The pre-rename `SPECTRON_*` spellings are still accepted as a fallback for every variable above.
+- The pre-rename `SPECTRON_*` spellings are **deprecated**. They still work for every variable above, but the hook logs a one-line warning naming each one in use, and support will be removed in a future release.
 - `AGENT_MEMORY_HOOK_VERBOSE=1` logs a one-line capture status.
 
 The hook is fail-open. With its token or Context id unset, it transmits and retains no conversation content; the managed MCP tools remain available on demand.

@@ -5,7 +5,7 @@ A Codex plugin marketplace from SurrealDB. It ships three plugins:
 | Plugin | What it connects | Ships | Setup |
 | --- | --- | --- | --- |
 | [`surrealdb`](plugins/surrealdb/) | SurrealDB's managed MCP at `https://mcp.surrealdb.com` | MCP server plus official SurrealDB skills | Sign in with your Surreal ID |
-| [`spectron`](plugins/spectron/) | The same managed MCP at `https://mcp.surrealdb.com` | MCP server plus optional Codex turn-capture hooks | Sign in with your Surreal ID; hook configuration is optional |
+| [`agent-memory`](plugins/agent-memory/) | The same managed MCP at `https://mcp.surrealdb.com` | MCP server plus optional Codex turn-capture hooks | Sign in with your Surreal ID; hook configuration is optional |
 | [`surrealdb-local`](plugins/surrealdb-local/) | A local, self-hosted, or air-gapped SurrealDB instance | Instance MCP plus a setup skill | Set the instance URL and bearer token |
 
 The managed plugins are zero-config: install one, then complete the browser sign-in when Codex first authenticates it. Use `surrealdb-local` when the target database is on `localhost`, a private network, or infrastructure that SurrealDB's managed MCP cannot reach.
@@ -13,7 +13,7 @@ The managed plugins are zero-config: install one, then complete the browser sign
 ## Requirements
 
 - Codex with local marketplace support.
-- A Surreal ID for the managed `surrealdb` and `spectron` plugins.
+- A Surreal ID for the managed `surrealdb` and `agent-memory` plugins.
 - For `surrealdb-local`, a SurrealDB instance exposing its built-in `/mcp` HTTP route and a scoped access token or JWT.
 
 ## Install From GitHub
@@ -23,7 +23,7 @@ Add this repository as a marketplace, then install the plugins you need:
 ```sh
 codex plugin marketplace add surrealdb/ai-codex-plugin --ref main
 codex plugin add surrealdb@surrealdb
-codex plugin add spectron@surrealdb
+codex plugin add agent-memory@surrealdb
 codex plugin add surrealdb-local@surrealdb
 ```
 
@@ -34,24 +34,24 @@ The repo-local marketplace manifest lives at `.agents/plugins/marketplace.json`.
 ```sh
 codex plugin marketplace add "$PWD"
 codex plugin add surrealdb@surrealdb
-codex plugin add spectron@surrealdb
+codex plugin add agent-memory@surrealdb
 codex plugin add surrealdb-local@surrealdb
 ```
 
 Start a new Codex task after installing or updating a plugin so the task picks up its skills and MCP tools.
 
-## Managed MCP (`surrealdb` and `spectron`)
+## Managed MCP (`surrealdb` and `agent-memory`)
 
 Both managed plugins connect to:
 
 | Server name | Endpoint | Authentication |
 | --- | --- | --- |
 | `surrealdb` | `https://mcp.surrealdb.com` | OAuth with your Surreal ID |
-| `spectron` | `https://mcp.surrealdb.com` | OAuth with your Surreal ID |
+| `agent-memory` | `https://mcp.surrealdb.com` | OAuth with your Surreal ID |
 
 Use the bare root URL exactly as shown. Do not append `/mcp` or `/sse` to the managed endpoint.
 
-The endpoint exposes SurrealDB data-plane tools, SurrealDB account and infrastructure tools, and Spectron memory tools. Installing both plugins can therefore surface the same managed tools under two server names. This is harmless; install only one if you do not want the duplicate tool surface.
+The endpoint exposes SurrealDB data-plane tools, SurrealDB account and infrastructure tools, and Agent Memory tools. Installing both plugins can therefore surface the same managed tools under two server names. This is harmless; install only one if you do not want the duplicate tool surface.
 
 If you manually register the managed endpoint instead of using the plugins, use:
 
@@ -95,21 +95,21 @@ codex mcp add surrealdb-local \
   --bearer-token-env-var SURREALDB_MCP_TOKEN
 ```
 
-## Optional Spectron Turn Capture
+## Optional Agent Memory Turn Capture
 
-The Spectron plugin's managed MCP server needs only OAuth. Its Codex hooks are separate: once trusted, `UserPromptSubmit` stages the user prompt locally and `Stop` sends each completed user/assistant turn through the bundled official `@surrealdb/spectron` SDK to Spectron's `/facts/batch` API.
+The Agent Memory plugin's managed MCP server needs only OAuth. Its Codex hooks are separate: once trusted, `UserPromptSubmit` stages the user prompt locally and `Stop` sends each completed user/assistant turn through the bundled official SurrealDB SDK to Agent Memory's `/facts/batch` API.
 
 Configure the hooks only if you want automatic turn capture:
 
 ```sh
-export SPECTRON_MCP_URL="https://your-spectron-instance.example.com/mcp"
-export SPECTRON_MCP_TOKEN="<bearer-token-or-api-key>"
-export SPECTRON_CONTEXT_ID="<context-id>"
+export AGENT_MEMORY_MCP_URL="https://your-agent-memory-instance.example.com/mcp"
+export AGENT_MEMORY_MCP_TOKEN="<bearer-token-or-api-key>"
+export AGENT_MEMORY_CONTEXT_ID="<context-id>"
 ```
 
 The hooks cannot reuse Codex's OAuth credential store, so they need their own endpoint, token, and Context id. A default install with those variables unset transmits and retains no conversation content; the managed MCP tools still work on demand.
 
-Codex requires the user to review and trust plugin hooks before they run. Use `/hooks` in Codex CLI to inspect their status. Delivery failures never block a turn, and completed turns remain in the plugin's writable data directory for a retry with the same idempotency key. Set `SPECTRON_HOOK_VERBOSE=1` for a one-line capture status.
+Codex requires the user to review and trust plugin hooks before they run. Use `/hooks` in Codex CLI to inspect their status. Delivery failures never block a turn, and completed turns remain in the plugin's writable data directory for a retry with the same idempotency key. Set `AGENT_MEMORY_HOOK_VERBOSE=1` for a one-line capture status. The pre-rename `SPECTRON_*` spellings are still accepted as a fallback.
 
 ## Upstream Skill Sync
 
@@ -135,7 +135,7 @@ Once a plugin is installed and authenticated, ask Codex things like:
 - Inspect the schema in my Cloud database.
 - What have I spent on SurrealDB this month?
 - Connect to my local SurrealDB and run a read-only query.
-- Inspect my Spectron memory tools.
+- Inspect my Agent Memory tools.
 - Write an idiomatic SurrealQL graph traversal.
 - Create an HNSW vector index for semantic search.
 
@@ -148,6 +148,6 @@ Treat mutation requests as real database, account, or memory operations. Confirm
 - Local endpoint 404: confirm the URL includes `/mcp` and the instance was not started with `--deny-http mcp`.
 - Local `InvalidToken`: confirm `SURREALDB_MCP_TOKEN` contains the final access token or JWT, not a bearer grant key.
 - Missing tools after install or update: start a new Codex task.
-- Missing Spectron capture: open `/hooks`, trust the hook, and verify the three `SPECTRON_*` variables above.
+- Missing Agent Memory capture: open `/hooks`, trust the hook, and verify the three `AGENT_MEMORY_*` variables above.
 
-Use `codex mcp get surrealdb`, `codex mcp get spectron`, `codex mcp get surrealdb-local`, or `codex mcp list` to inspect MCP configuration.
+Use `codex mcp get surrealdb`, `codex mcp get agent-memory`, `codex mcp get surrealdb-local`, or `codex mcp list` to inspect MCP configuration.
